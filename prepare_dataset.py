@@ -47,14 +47,14 @@ def load_user_metadata(labels_file: str) -> Dict[str, List]:
     return user_metadata
 
 
-def preprocess_federated_dataset(input_data_dir: str,
+def preprocess_federated_dataset(image_dir: str,
                                  labels_file: str,
                                  output_file: str):
     """
     Process images and labels into a HDF5 federated dataset where data is
     first split by train/test partitions and then split again by user ID.
 
-    :param input_data_dir:
+    :param image_dir:
         Path to directory of images output from the script
         `download_dataset.sh`.
     :param labels_file:
@@ -81,7 +81,7 @@ def preprocess_federated_dataset(input_data_dir: str,
             for metadata in user_metadata[user_id]:
                 image_id = metadata["image_id"]
                 image = Image.open(
-                    os.path.join(input_data_dir, f"{image_id}.jpg"))
+                    os.path.join(image_dir, f"{image_id}.jpg"))
                 image_array.append(np.asarray(image))
                 image_id_array.append(image_id)
                 # Encode labels as a single string, separated by delimiter |
@@ -117,7 +117,7 @@ def preprocess_federated_dataset(input_data_dir: str,
     logger.info('Finished preprocess federated dataset successfully!')
 
 
-def preprocess_central_dataset(input_data_dir: str,
+def preprocess_central_dataset(image_dir: str,
                                labels_file: str,
                                output_file: str):
     """
@@ -137,7 +137,7 @@ def preprocess_central_dataset(input_data_dir: str,
             for metadata in user_metadata[user_id]:
                 image_id = metadata["image_id"]
                 image = Image.open(
-                    os.path.join(input_data_dir, f"{image_id}.jpg"))
+                    os.path.join(image_dir, f"{image_id}.jpg"))
                 partition = metadata["partition"]
                 h5file.create_dataset(
                     f'/{partition}/{image_id}/image', data=np.asarray(image))

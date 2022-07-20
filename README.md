@@ -3,6 +3,8 @@
 FLAIR is a large dataset of images that captures a number of characteristics encountered in federated learning and privacy-preserving ML tasks. 
 This dataset comprises approximately 430,000 images from 51,000 Flickr users, which will better reflect federated learning problems arising in practice, and it is being released to aid research in the field.
 
+![alt text](assets/FLAIR_sample.jpeg)
+
 ## Image Labels
 These images have been annotated by humans and assigned labels from a taxonomy of more than 1,600 fine-grained labels. 
 All main subjects present in the images have been labeled, so images may have multiple labels. 
@@ -90,7 +92,7 @@ jupyter notebook
 - To explore the downloaded images, open in jupyter notebook [`explore_images.ipynb`](./explore_images.ipynb) which displays the images with corresponding metadata and labels.
 - To explore the labels, open in jupyter notebook  [`explore_labels.ipynb`](./explore_labels.ipynb) which displays the statistics of the user and label distribution.
 
-### Prepare the dataset
+### (Optional) Prepare the dataset in HDF5
 We provide a script to prepare the dataset in HDF5 format for more efficient processing and training:
 ```sh
 python3 prepare_dataset.py --dataset_dir=/path/to/data --output_file=/path/to/hdf5
@@ -98,6 +100,72 @@ python3 prepare_dataset.py --dataset_dir=/path/to/data --output_file=/path/to/hd
 By default the script will group the images and labels by train/val/test split and then by user ids, making it suitable for federated learning experiments.
 With the flag `--not_group_data_by_user`, the script will simply group the images and labels by train/val/test split and ignore the user ids, which is the typical setup for centralized training. \
 ⚠️ Warning: the hdf5 file take up to ~80GB disk space to store after processing.
+
+## Benchmark FLAIR with TensorFlow Federated
+
+### Prepare the dataset in TFRecords
+We provide a script to prepare the dataset in TFRecords format for benchmarking with TensorFlow Federated:
+```sh
+python3 prepare_tfrecords.py --dataset_dir=/path/to/data --tfrecords_dir=/path/to/tfrecords
+```
+When the above script finishes, the `tfrecords_dir` will have the following layout:
+```
+tfrecords_dir
+├── label_index.json             # a mapping from class label to index    
+├── train
+│   └── <user-id>.tfrecords      # tfrecords for all train users
+├── dev
+│   └── <user-id>.tfrecords      # tfrecords for all dev users
+└── test                    
+    └── <user-id>.tfrecords      # tfrecords for all test users
+```
+### Training in centralized setting
+In centralized setting, user split is ignored and all users' data are concatenated.
+Centralized model training can be done in TensorFlow Keras with the following command:
+```sh
+python3 -m benchmark.central_main --tfrecords_dir=/path/to/tfrecords
+```
+To view all available arguments, please use the following command: 
+```sh
+python3 -m benchmark.central_main --help
+```
+Please refer to our [benchmark paper](https://arxiv.org/abs/2207.08869) for the recommended hyperparameters.
+
+### Training in federated setting
+In federated setting, sampled users train on their own data locally and then share the model updates with the central server.
+Federated model training can be simulated in TensorFlow Federated with the following command:
+```sh
+python3 -m benchmark.federated_main --tfrecords_dir=/path/to/tfrecords
+```
+To view all available arguments, please use the following command: 
+```sh
+python3 -m benchmark.federated_main --help
+```
+Please refer to our [benchmark paper](https://arxiv.org/abs/2207.08869) for the recommended hyperparameters.
+
+### Training in federated setting with differential privacy
+To provide a formal privacy guarantee, we use [DP-SGD](https://arxiv.org/abs/1607.00133)
+in the [federated context](https://arxiv.org/abs/1710.06963) which is supported in TensorFlow Federated.
+The following command enables federated learning with differential privacy:
+```sh
+python3 -m benchmark.federated_main --tfrecords_dir=/path/to/tfrecords --epsilon=2.0 --l2_norm_clip=0.1
+```
+where `epsilon` is the privacy budget and `l2_norm_clip` is the L2 norm clipping bound for Gaussian mechanism.
+By default, we use [adaptive clipping](https://arxiv.org/abs/1905.03871v3) to tune the L2 norm clipping bound automatically by setting `--target_unclipped_quantile=0.1`.
+
+### Fine-tuning a pretrained ImageNet model
+Above commands are all for training from a random initialized model.
+We also provide a ResNet model pretrained on ImageNet, which can be downloaded with the following command: 
+```sh
+wget -O /path/to/model https://docs-assets.developer.apple.com/ml-research/datasets/flair/models/resnet18.h5
+```
+The pretrained model is originally from [torch vision](https://download.pytorch.org/models/resnet18-f37072fd.pth) and converted to Keras format.
+To use the pretrained model, please add the argument `--restore_model_path=/path/to/model` in the above training commands.
+
+### Training a binary classifier for a single label
+By default, we train a multi-label classification model where the output is a multi-hot vector indicating which labels presented in the input image.
+We also provide the option to train a simpler binary classifier for a single label. 
+For example, adding the argument `--binary_label=structure` trains a model only to predict whether `structure` label presented in the image. 
 
 ## Disclaimer
 The annotations and Apple’s other rights in the dataset are licensed under CC-BY-NC 4.0 license. 
