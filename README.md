@@ -20,7 +20,7 @@ These properties of the dataset better reflect federated learning applications, 
 
 ## Getting Started
 ### Prerequisites
-Please make sure you have python >= 3.6 and have the required packages installed (see below).
+Please make sure you have python >= 3.8 and have the required packages installed (see below).
 ```sh
 python3 -m pip install -r requirements.txt
 ```
