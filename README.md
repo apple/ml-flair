@@ -1,5 +1,8 @@
 # Federated Learning Annotated Image Repository (FLAIR): A large labelled image dataset for benchmarking in federated learning
 
+**Paper:** [link](https://proceedings.neurips.cc/paper_files/paper/2022/file/f64e55d03e2fe61aa4114e49cb654acb-Paper-Datasets_and_Benchmarks.pdf)
+**Update:** FLAIR is now available in [pfl-research](https://github.com/apple/pfl-research/tree/develop/benchmarks/flair)!
+
 FLAIR is a large dataset of images that captures a number of characteristics encountered in federated learning and privacy-preserving ML tasks. 
 This dataset comprises approximately 430,000 images from 51,000 Flickr users, which will better reflect federated learning problems arising in practice, and it is being released to aid research in the field.
 
@@ -171,3 +174,14 @@ For example, adding the argument `--binary_label=structure` trains a model only 
 The annotations and Apple’s other rights in the dataset are licensed under CC-BY-NC 4.0 license. 
 The images are copyright of the respective owners, the license terms of which can be found using the links provided in ATTRIBUTIONS.TXT (by matching the Image ID). 
 Apple makes no representations or warranties regarding the license status of each image and you should verify the license for each image yourself.
+
+## Citing FLAIR
+
+@article{song2022flair,
+  title={FLAIR: Federated Learning Annotated Image Repository},
+  author={Song, Congzheng and Granqvist, Filip and Talwar, Kunal},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={37792--37805},
+  year={2022}
+}
