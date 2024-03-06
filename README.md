@@ -1,6 +1,7 @@
 # Federated Learning Annotated Image Repository (FLAIR): A large labelled image dataset for benchmarking in federated learning
 
 **Paper:** [link](https://proceedings.neurips.cc/paper_files/paper/2022/file/f64e55d03e2fe61aa4114e49cb654acb-Paper-Datasets_and_Benchmarks.pdf)
+
 **Update:** FLAIR is now available in [pfl-research](https://github.com/apple/pfl-research/tree/develop/benchmarks/flair)!
 
 FLAIR is a large dataset of images that captures a number of characteristics encountered in federated learning and privacy-preserving ML tasks. 
@@ -177,6 +178,7 @@ Apple makes no representations or warranties regarding the license status of eac
 
 ## Citing FLAIR
 
+```
 @article{song2022flair,
   title={FLAIR: Federated Learning Annotated Image Repository},
   author={Song, Congzheng and Granqvist, Filip and Talwar, Kunal},
@@ -185,3 +187,4 @@ Apple makes no representations or warranties regarding the license status of eac
   pages={37792--37805},
   year={2022}
 }
+```
